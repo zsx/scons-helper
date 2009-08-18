@@ -1,0 +1,6 @@
+[submodule "cairo"]
+	path = cairo
+	url = git@git.github.com:zsx/cairo.git
+[submodule "zlib"]
+	path = zlib
+	url = git@git.github.com:zsx/zlib.git
