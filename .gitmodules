@@ -22,9 +22,6 @@
 [submodule "totem"]
 	path = totem
 	url = git@git.github.com:zsx/totem.git
-[submodule "plparser"]
-	path = plparser
-	url = git@git.github.com:zsx/totem_plparser.git
 [submodule "gtk"]
 	path = gtk
 	url = git@git.github.com:zsx/gtk.git
