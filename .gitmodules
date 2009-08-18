@@ -4,3 +4,30 @@
 [submodule "zlib"]
 	path = zlib
 	url = git@git.github.com:zsx/zlib.git
+[submodule "pango"]
+	path = pango
+	url = git@git.github.com:zsx/pango.git
+[submodule "glib"]
+	path = glib
+	url = git@git.github.com:zsx/glib.git
+[submodule "atk"]
+	path = atk
+	url = git@git.github.com:zsx/atk.git
+[submodule "png"]
+	path = png
+	url = git@git.github.com:zsx/png.git
+[submodule "pixman"]
+	path = pixman
+	url = git@git.github.com:zsx/pixman.git
+[submodule "totem"]
+	path = totem
+	url = git@git.github.com:zsx/totem.git
+[submodule "totem-plparser"]
+	path = totem-plparser
+	url = git@git.github.com:zsx/totem-plparser.git
+[submodule "gtk"]
+	path = gtk
+	url = git@git.github.com:zsx/gtk.git
+[submodule "libxml2"]
+	path = libxml2
+	url = git@git.github.com:zsx/libxml2.git
