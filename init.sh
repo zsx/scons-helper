@@ -29,4 +29,9 @@ do
    	cd ..
 done
 
+cd png
+echo "adding png's origin"
+git remote add origin git://libpng.git.sourceforge.net/gitroot/libpng 
+cd ..
+
 git submodule init
