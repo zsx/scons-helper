@@ -1,0 +1,16 @@
+ * Checkout submodules
+After checkout the base repository, you need to checkout submodules by:
+
+git submodule init
+git submodule update
+
+ * To build:
+scons # for release build
+scons debug=1 # for debug build
+
+ * To install:
+scons install #for release build
+scons debug=1 install #for debug build
+
+ * To install them in a customed path:
+change prefix in SConstruct
