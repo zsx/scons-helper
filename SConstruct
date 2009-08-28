@@ -33,6 +33,8 @@ else:
 	env.Append(LIB_SUFFIX = '-msvcrt90')
 	prefix=os.path.expanduser(r'~\FOSS\Release')
 
+env['PERL']=r'C:\perl\bin\perl.exe'
+
 SConscript(['zlib/SConscript',
 			'pixman/SConscript'], 
 			exports='env prefix')
