@@ -21,9 +21,10 @@ env.Append(BUILDERS={'DotIn': dot_in_processor})
 prefix=os.path.expanduser(r'~\FOSS\Debug')
 
 if ARGUMENTS.get('debug', 0):
-	print "debug environment"
+	print "Debug environment"
 	env.Append(CCPPDEFINES = '_DEBUG')
-	env.Append(CFLAGS = '/Od /Zi')
+	env.Append(CFLAGS = '/Od')
+	env['CCPDBFLAGS'] = ['${(PDB and "/Zi /Fd%s" % File(PDB)) or ""}']
 	env.Append(LIB_SUFFIX = '-msvcrt90d')
 	prefix=os.path.expanduser(r'~\FOSS\Debug')
 else:
@@ -32,5 +33,6 @@ else:
 	env.Append(LIB_SUFFIX = '-msvcrt90')
 	prefix=os.path.expanduser(r'~\FOSS\Release')
 
-SConscript('zlib/SConscript', 
-			exports=['env', 'prefix'])
+SConscript(['zlib/SConscript',
+			'pixman/SConscript'], 
+			exports='env prefix')
