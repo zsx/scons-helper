@@ -20,5 +20,17 @@ dot_in_processor = env.Builder(action= dot_in_fun, src_suffix = '.in')
 env.Append(BUILDERS={'DotIn': dot_in_processor})
 prefix=os.path.expanduser(r'~\FOSS\Debug')
 
+if ARGUMENTS.get('debug', 0):
+	print "debug environment"
+	env.Append(CCPPDEFINES = '_DEBUG')
+	env.Append(CFLAGS = '/Od /Zi')
+	env.Append(LIB_SUFFIX = '-msvcrt90d')
+	prefix=os.path.expanduser(r'~\FOSS\Debug')
+else:
+	print "Release environment"
+	env.Append(CFLAGS = '-Ox')
+	env.Append(LIB_SUFFIX = '-msvcrt90')
+	prefix=os.path.expanduser(r'~\FOSS\Release')
+
 SConscript('zlib/SConscript', 
 			exports=['env', 'prefix'])
