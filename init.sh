@@ -17,7 +17,7 @@ for mod in $GNOME_MODULES
 do 
 	cd $mod
 	echo "adding $mod's origin"
-	git remote add origin git://git.gnome.com/$mod
+	git remote add origin git://git.gnome.org/$mod
    	cd ..
 done
 
