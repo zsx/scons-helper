@@ -1,8 +1,9 @@
-# vim: set ft=python
+# vim: ft=python expandtab
 import os
+import subprocess
+import re
 
-env = Environment()
-
+env = Environment(ENV = {'PATH' : os.environ['PATH']})
 def dot_in_fun(target, source, env):
 	if not env.has_key('DOT_IN_SUBS'):
 		raise Exception("DOT_IN_SUBS is not set in env")
