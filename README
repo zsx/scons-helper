@@ -14,3 +14,9 @@ scons debug=1 install #for debug build
 
  * To install them in a customed path:
 change prefix in SConstruct
+ 
+ * build tests
+ scons build_test=1
+
+ * run tests
+ scons test
