@@ -1,19 +1,16 @@
  * Checkout submodules
-After checkout the base repository, you need to checkout submodules by:
+ After checkout the base repository, you need to checkout submodules by:
 
-git submodule init
-git submodule update
+ git submodule init
+ git submodule update
 
  * To build:
-scons # for release build
-scons debug=1 # for debug build
+ cd submodule directory
+ scons PREFIX=DIRECTORY PERL=PERL_EXE DEBUG=1 build_test=1
 
  * To install:
-scons install #for release build
-scons debug=1 install #for debug build
-
- * To install them in a customed path:
-change prefix in SConstruct
+ scons install #for release build
+ scons DEBUG=1 install #for debug build
  
  * build tests
  scons build_test=1
