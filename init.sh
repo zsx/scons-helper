@@ -31,7 +31,7 @@ done
 
 cd png
 echo "adding png's origin"
-git remote add origin git://libpng.git.sourceforge.net/gitroot/libpng 
+git remote add origin git://libpng.git.sourceforge.net/gitroot/libpng/libpng
 cd ..
 
 git submodule init
