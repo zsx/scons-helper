@@ -14,7 +14,8 @@ packs = ['zlib',
          'pixman',
          'png',
          'cairo',
-         'glib']
+         'glib',
+         'libxml2']
 
 args = [r'--site-dir=..', r'PREFIX=C:\FOSS\Debug', 'DEBUG=1', r'PERL=C:\Perl\bin\perl.exe', 'build_test=1'] + sys.argv[1:]
 
