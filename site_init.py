@@ -1,6 +1,9 @@
 # vim: ft=python expandtab
 import subprocess
 import re
+from filecmp import cmp
+from tempfile import mkstemp
+from shutil import copyfile
 from SCons.Script import *
 
 def GBuilder(env):
@@ -51,6 +54,65 @@ def GBuilder(env):
     dot_symbols2def_processor = env.Builder(action= dot_symbols2def, src_suffix = '.symbols')
 
     env.Append(BUILDERS={'DotSymbols2Def': dot_symbols2def_processor})
+
+    def gen_marshal(target, source, env):
+        if not (env.has_key('GLIB_GENMARSHAL_ARGV')
+                and env.has_key('GLIB_GENMARSHAL')):
+            raise Exception("set GLIB_GENMARSHAL_ARGV before gen_marshal")
+        args = [env['GLIB_GENMARSHAL']]
+        for arg in env['GLIB_GENMARSHAL_ARGV']:
+            if (isinstance(arg, tuple) or isinstance(arg, list)) \
+                and len(arg) == 2:
+                args.append('--%s=%s' % (arg[0], arg[1]))
+            else:
+                args.append('--%s' % arg)
+        args += map(str, source)
+        fd, fp = mkstemp()
+        os.close(fd)
+        try:
+            for t in target:
+                tpath = str(t)
+                fo = file(fp, 'w')
+                if tpath.endswith('.h'):
+                    subprocess.Popen(' '.join(args + ['--header']), stdout = fo).wait()
+                if tpath.endswith('.c'):
+                    subprocess.Popen(' '.join(args + ['--body']), stdout = fo).wait()
+                fo.close()
+                if os.path.exists(tpath) and cmp(fp, tpath):
+                    continue
+                else:
+                    copyfile(fp, tpath) #target will be replaced
+        finally:
+            os.unlink(fp)
+
+    marshal_generator = env.Builder(action = gen_marshal, src_suffix = '.list')
+    env.Append(BUILDERS={'MarshalGenerator': marshal_generator})
+
+    def mkenums(target, source, env):
+        if not (env.has_key('GLIB_MKENUMS_ARGV')
+                and env.has_key('GLIB_MKENUMS')):
+            raise Exception("set GLIB_MKENUMS_ARGV before gen_marshal")
+        tpath = str(target[0])
+        args = [env['PERL'], env['GLIB_MKENUMS']]
+        for arg in env['GLIB_MKENUMS_ARGV']:
+            if (isinstance(arg, tuple) or isinstance(arg, list))\
+                and len(arg) == 2:
+                args.append('--%s %s' % (arg[0], arg[1]))
+            else:
+                args.append('--%s' % argv)
+        args += map(str, source)
+        fd, fp = mkstemp()
+        try:
+            fo = os.fdopen(fd, 'w')
+            subprocess.Popen(' '.join(args), stdout = fo).wait()
+            fo.close()
+            if not os.path.exists(tpath) or not cmp(fp, tpath):
+                copyfile(fp, tpath) #target will be replaced
+        finally:
+            os.unlink(fp)
+
+    mkenums_generator = env.Builder(action = mkenums, src_suffix = '.h')
+    env.Append(BUILDERS={'MkenumsGenerator': mkenums_generator})
 
 def Initialize(env):
     if env['DEBUG']:
