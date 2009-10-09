@@ -120,6 +120,7 @@ def GBuilder(env):
     env.Append(BUILDERS={'MkenumsGenerator': mkenums_generator})
 
 def Initialize(env):
+    env.AppendENVPath('PKG_CONFIG_PATH', env['PREFIX'] + '/lib/pkgconfig')
     if env['DEBUG']:
         print "Debug environment"
         env['DEBUG_CFLAGS'] = '/Od'
