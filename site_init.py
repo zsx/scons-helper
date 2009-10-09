@@ -56,10 +56,13 @@ def GBuilder(env):
     env.Append(BUILDERS={'DotSymbols2Def': dot_symbols2def_processor})
 
     def gen_marshal(target, source, env):
-        if not (env.has_key('GLIB_GENMARSHAL_ARGV')
-                and env.has_key('GLIB_GENMARSHAL')):
+        if not env.has_key('GLIB_GENMARSHAL_ARGV'):
             raise Exception("set GLIB_GENMARSHAL_ARGV before gen_marshal")
-        args = [env['GLIB_GENMARSHAL']]
+        if env.has_key('GLIB_GENMARSHAL'):
+            args = [env['GLIB_GENMARSHAL']]
+        else:
+            args = [env['PREFIX'] + r'\bin\glib-genmarshal']
+
         for arg in env['GLIB_GENMARSHAL_ARGV']:
             if (isinstance(arg, tuple) or isinstance(arg, list)) \
                 and len(arg) == 2:
@@ -89,11 +92,13 @@ def GBuilder(env):
     env.Append(BUILDERS={'MarshalGenerator': marshal_generator})
 
     def mkenums(target, source, env):
-        if not (env.has_key('GLIB_MKENUMS_ARGV')
-                and env.has_key('GLIB_MKENUMS')):
+        if not env.has_key('GLIB_MKENUMS_ARGV'):
             raise Exception("set GLIB_MKENUMS_ARGV before gen_marshal")
         tpath = str(target[0])
-        args = [env['PERL'], env['GLIB_MKENUMS']]
+        if env.has_key('GLIB_MKENUS'):
+            args = [env['PERL'], env['GLIB_MKENUMS']]
+        else:
+            args = [env['PERL'], env['PREFIX'] + r'\bin\glib-mkenums']
         for arg in env['GLIB_MKENUMS_ARGV']:
             if (isinstance(arg, tuple) or isinstance(arg, list))\
                 and len(arg) == 2:
