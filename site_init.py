@@ -61,7 +61,7 @@ def GBuilder(env):
         if env.has_key('GLIB_GENMARSHAL'):
             args = [env['GLIB_GENMARSHAL']]
         else:
-            args = [env['PREFIX'] + r'\bin\glib-genmarshal']
+            args = [env['PREFIX'] + r'\bin\glib-genmarshal.exe']
 
         for arg in env['GLIB_GENMARSHAL_ARGV']:
             if (isinstance(arg, tuple) or isinstance(arg, list)) \
@@ -70,23 +70,15 @@ def GBuilder(env):
             else:
                 args.append('--%s' % arg)
         args += map(str, source)
-        fd, fp = mkstemp()
-        os.close(fd)
-        try:
-            for t in target:
-                tpath = str(t)
-                fo = file(fp, 'w')
-                if tpath.endswith('.h'):
-                    subprocess.Popen(' '.join(args + ['--header']), stdout = fo).wait()
-                if tpath.endswith('.c'):
-                    subprocess.Popen(' '.join(args + ['--body']), stdout = fo).wait()
-                fo.close()
-                if os.path.exists(tpath) and cmp(fp, tpath):
-                    continue
-                else:
-                    copyfile(fp, tpath) #target will be replaced
-        finally:
-            os.unlink(fp)
+
+        for t in target:
+            tpath = str(t)
+            fo = file(tpath, 'w')
+            if tpath.endswith('.h'):
+                subprocess.Popen(' '.join(args + ['--header']), stdout = fo).wait()
+            elif tpath.endswith('.c'):
+                subprocess.Popen(' '.join(args + ['--body']), stdout = fo).wait()
+            fo.close()
 
     marshal_generator = env.Builder(action = gen_marshal, src_suffix = '.list')
     env.Append(BUILDERS={'MarshalGenerator': marshal_generator})
@@ -105,16 +97,11 @@ def GBuilder(env):
                 args.append('--%s %s' % (arg[0], arg[1]))
             else:
                 args.append('--%s' % argv)
+
         args += map(str, source)
-        fd, fp = mkstemp()
-        try:
-            fo = os.fdopen(fd, 'w')
-            subprocess.Popen(' '.join(args), stdout = fo).wait()
-            fo.close()
-            if not os.path.exists(tpath) or not cmp(fp, tpath):
-                copyfile(fp, tpath) #target will be replaced
-        finally:
-            os.unlink(fp)
+        fo = file(tpath, 'w')
+        subprocess.Popen(' '.join(args), stdout = fo).wait()
+        fo.close()
 
     mkenums_generator = env.Builder(action = mkenums, src_suffix = '.h')
     env.Append(BUILDERS={'MkenumsGenerator': mkenums_generator})
