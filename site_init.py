@@ -125,4 +125,4 @@ def Initialize(env):
 def GInitialize(env):
     Initialize(env)
     if env['DEBUG']:
-        env['DEBUG_CPPDEFINES'] = ['G_ENABLE_DEBUG', '_DEBUG']
+        env['DEBUG_CPPDEFINES'] += ['G_ENABLE_DEBUG']
