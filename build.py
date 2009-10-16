@@ -4,9 +4,6 @@
 import subprocess
 import os
 import sys
-env = os.environ
-
-env['PKG_CONFIG_PATH'] = r'C:\FOSS\Debug\lib\pkgconfig'
 
 top_dir = os.path.dirname(__file__)
 
