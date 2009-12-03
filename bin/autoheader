@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if test -n $1 ; then
+	root_dir=$1
+else
+	root_dir="~/My Document/super-totem"
+fi
+export autom4te_perllibdir="$root_dir/share/autoconf"
+export AUTOM4TE="$root_dir/bin/autom4te"
+export M4="$root_dir/bin/m4.exe"
+export AUTOM4TE_CFG="$root_dir/share/autoconf/autom4te.cfg"
+export AUTOM4TE_DEBUG=1
+perl "$root_dir/bin/autoheader.pl" -v -I "$root_dir/share/autoconf"
