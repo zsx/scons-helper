@@ -10,10 +10,15 @@ top_dir = os.path.dirname(__file__)
 packs = ['zlib',
          'pixman',
          'png',
+         'freetype2',
+         'fontconfig',
          'cairo',
          'glib',
          'libxml2',
-         'atk']
+         'atk', 
+         'pango',
+         'librsvg',
+         'gtk']
 
 args = [r'--site-dir=..', r'PREFIX=C:\FOSS\Debug', 'DEBUG=1', r'PERL=C:\Perl\bin\perl.exe', 'build_test=1'] + sys.argv[1:]
 
