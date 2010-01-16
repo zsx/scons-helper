@@ -60,6 +60,8 @@ def GBuilder(env):
             raise Exception("set GLIB_GENMARSHAL_ARGV before gen_marshal")
         if env.has_key('GLIB_GENMARSHAL'):
             args = [env['GLIB_GENMARSHAL']]
+        elif env['ENV'].has_key('GLIB_GENMARSHAL'):
+            args = [env['ENV']['GLIB_GENMARSHAL']]
         else:
             args = [env['PREFIX'] + r'\bin\glib-genmarshal.exe']
 
@@ -87,8 +89,10 @@ def GBuilder(env):
         if not env.has_key('GLIB_MKENUMS_ARGV'):
             raise Exception("set GLIB_MKENUMS_ARGV before gen_marshal")
         tpath = str(target[0])
-        if env.has_key('GLIB_MKENUS'):
+        if env.has_key('GLIB_MKENUMS'):
             args = [env['PERL'], env['GLIB_MKENUMS']]
+        elif env['ENV'].has_key('GLIB_MKENUMS'):
+            args = [env['PERL'], env['ENV']['GLIB_MKENUMS']]
         else:
             args = [env['PERL'], env['PREFIX'] + r'\bin\glib-mkenums']
         for arg in env['GLIB_MKENUMS_ARGV']:
@@ -96,7 +100,7 @@ def GBuilder(env):
                 and len(arg) == 2:
                 args.append('--%s %s' % (arg[0], arg[1]))
             else:
-                args.append('--%s' % argv)
+                args.append('--%s' % arg)
 
         args += map(str, source)
         fo = file(tpath, 'w')
