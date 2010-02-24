@@ -1,6 +1,7 @@
 # vim: ft=python expandtab
 import subprocess
 import re
+import os
 from filecmp import cmp
 from tempfile import mkstemp
 from shutil import copyfile
@@ -109,6 +110,85 @@ def GBuilder(env):
 
     mkenums_generator = env.Builder(action = mkenums, src_suffix = '.h')
     env.Append(BUILDERS={'MkenumsGenerator': mkenums_generator})
+
+
+def __Install(target, source, env, d):
+    dest = re.sub(r'\$(\w+)', lambda x: env[x.group(1)], target)
+    dest = dest.replace('\\', '/')
+    if 'PARENT_ENV' in env:
+        __Install(dest, source, env['PARENT_ENV'], d)
+        return
+
+    if not dest.endswith('/'):
+        dest += '/'
+    print "dest = ", dest
+    if isinstance(source, str):
+        l = [dest + os.path.basename(source)]
+    else:
+        print "Non str: src = ", source
+        l = map(lambda x: dest + os.path.basename(x), source)
+    if d not in env:
+        env[d] = l
+    else:
+        env[d] += l
+    print "env[%s] = " % d, l
+    env.Alias('install', env.Install(target, source))
+
+def InstallRun(target, source, env):
+    __Install(target, source, env, "INSTALL_RUNTIME")
+
+def InstallDev(target, source, env):
+    __Install(target, source, env, "INSTALL_DEV")
+
+def InstallAny(target, source, env):
+    __Install(target, source, env, "INSTALL_ANY")
+
+def __InstallAs(target, source, env, d):
+    dest = re.sub(r'\$(\w+)', lambda x: env[x.group(1)], target)
+    dest = dest.replace('\\', '/')
+    if 'PARENT_ENV' in env:
+        __InstallAs(dest, source, env['PARENT_ENV'], d)
+    else:
+        if d not in env:
+            env[d] = [dest]
+        else:
+            env[d] += [dest]
+        env.Alias('install', env.InstallAs(target, source))
+
+def InstallRunAs(target, source, env):
+    __InstallAs(target, source, env, "INSTALL_RUNTIME")
+
+def InstallDevAs(target, source, env):
+    __InstallAs(target, source, env, "INSTALL_DEV")
+
+def InstallAnyAs(target, source, env):
+    __InstallAs(target, source, env, "INSTALL_ANY")
+
+def DumpInstalledFiles(env):
+    if 'PACKAGE_NAME' not in env:
+        raise Exception("PACKAGE_NAME is not set")
+    of = file(env['PACKAGE_NAME'] + '_MANIFEST.txt', 'w')
+    print "writing to ", env['PACKAGE_NAME'] + '_MANIFEST.txt'
+
+    if 'PACKAGE_VERSION' in env:
+        of.writelines('@VER@' + env['PACKAGE_VERSION'] + '\n')
+
+    if 'PACKAGE_DEPENDS' in env:
+        of.writelines('@DEP@' + ','.join(env['PACKAGE_DEPENDS']) + '\n')
+
+    if 'INSTALL_RUNTIME' in env:
+        print "Writing INSTALL_RUNTIME:"
+        print env['INSTALL_RUNTIME']
+        of.writelines(map(lambda x: '@RUN@' + x + '\n', env['INSTALL_RUNTIME']))
+
+    if 'INSTALL_DEV' in env:
+        print "Writing INSTALL_DEV:"
+        print env['INSTALL_DEV']
+        of.writelines(map(lambda x: '@DEV@' + x + '\n', env['INSTALL_DEV']))
+
+    if 'INSTALL_ANY' in env:
+        of.writelines(map(lambda x: '@ANY@' + x + '\n', env['INSTALL_ANY']))
+    of.close()
 
 def Initialize(env):
     env.AppendENVPath('PKG_CONFIG_PATH', env['PREFIX'] + '/lib/pkgconfig')
