@@ -66,12 +66,15 @@ def GBuilder(env):
         else:
             args = [env['PREFIX'] + r'\bin\glib-genmarshal.exe']
 
-        for arg in env['GLIB_GENMARSHAL_ARGV']:
-            if (isinstance(arg, tuple) or isinstance(arg, list)) \
-                and len(arg) == 2:
-                args.append('--%s=%s' % (arg[0], arg[1]))
-            else:
-                args.append('--%s' % arg)
+        if isinstance(env['GLIB_GENMARSHAL_ARGV'], str):
+            args.append(env['GLIB_GENMARSHAL_ARGV'])
+        else:#for compatibility purpose
+            for arg in env['GLIB_GENMARSHAL_ARGV']:
+                if (isinstance(arg, tuple) or isinstance(arg, list)) \
+                    and len(arg) == 2:
+                    args.append('--%s=%s' % (arg[0], arg[1]))
+                else:
+                    args.append('--%s' % arg)
         args += map(str, source)
 
         for t in target:
@@ -96,12 +99,16 @@ def GBuilder(env):
             args = [env['PERL'], env['ENV']['GLIB_MKENUMS']]
         else:
             args = [env['PERL'], env['PREFIX'] + r'\bin\glib-mkenums']
-        for arg in env['GLIB_MKENUMS_ARGV']:
-            if (isinstance(arg, tuple) or isinstance(arg, list))\
-                and len(arg) == 2:
-                args.append('--%s %s' % (arg[0], arg[1]))
-            else:
-                args.append('--%s' % arg)
+
+        if isinstance(env['GLIB_MKENUMS_ARGV'], str):
+            args.append(env['GLIB_MKENUMS_ARGV'])
+        else:#for compatibility purpose
+            for arg in env['GLIB_MKENUMS_ARGV']:
+                if (isinstance(arg, tuple) or isinstance(arg, list))\
+                    and len(arg) == 2:
+                    args.append('--%s %s' % (arg[0], arg[1]))
+                else:
+                    args.append('--%s' % arg)
 
         args += map(str, source)
         fo = file(tpath, 'w')
@@ -111,6 +118,28 @@ def GBuilder(env):
     mkenums_generator = env.Builder(action = mkenums, src_suffix = '.h')
     env.Append(BUILDERS={'MkenumsGenerator': mkenums_generator})
 
+    def gen_def_from_headers_by_exporting_regex(target, source, env):
+        t = open(str(target[0]), 'w')
+        t.write("EXPORTS\n")
+        syms = set()
+        if 'DEF_ADDONS' in env:
+            for i in env['DEF_ADDONS']:
+                syms.add(i)
+        fun_regex = re.compile(r'\b(' + env['EXPORT_REGEX'] +'\w+)\s*\(')
+        for i in source:
+            s = open(str(i), 'r')
+            for x in s.readlines():
+                mo = fun_regex.search(x)
+                if mo:
+                    if 'BLACKLIST' not in env or mo.group(1) not in env['BLACKLIST']:
+                        syms.add(mo.group(1) + '\n')
+            s.close()
+        syms_list = list(syms)
+        syms_list.sort()
+        t.writelines(syms_list)
+        t.close()
+    
+    env.Append(BUILDERS={'DefGeneratorByRegex': env.Builder(action = gen_def_from_headers_by_exporting_regex, src_suffix = '.h')})
 
 def __Install(target, source, env, d):
     dest = re.sub(r'\$(\w+)', lambda x: env[x.group(1)], target)
@@ -121,17 +150,17 @@ def __Install(target, source, env, d):
 
     if not dest.endswith('/'):
         dest += '/'
-    print "dest = ", dest
+    #print "dest = ", dest
     if isinstance(source, str):
         l = [dest + os.path.basename(source)]
     else:
-        print "Non str: src = ", source
+        #print "Non str: src = ", source
         l = map(lambda x: dest + os.path.basename(x), source)
     if d not in env:
         env[d] = l
     else:
         env[d] += l
-    print "env[%s] = " % d, l
+    #print "env[%s] = " % d, l
     env.Alias('install', env.Install(target, source))
 
 def InstallRun(target, source, env):
@@ -168,22 +197,25 @@ def DumpInstalledFiles(env):
     if 'PACKAGE_NAME' not in env:
         raise Exception("PACKAGE_NAME is not set")
     of = file(env['PACKAGE_NAME'] + '_MANIFEST.txt', 'w')
-    print "writing to ", env['PACKAGE_NAME'] + '_MANIFEST.txt'
+    #print "writing to ", env['PACKAGE_NAME'] + '_MANIFEST.txt'
 
     if 'PACKAGE_VERSION' in env:
         of.writelines('@VER@' + env['PACKAGE_VERSION'] + '\n')
 
     if 'PACKAGE_DEPENDS' in env:
-        of.writelines('@DEP@' + ','.join(env['PACKAGE_DEPENDS']) + '\n')
+        if isinstance(env['PACKAGE_DEPENDS'], str):
+            of.writelines('@DEP@' + env['PACKAGE_DEPENDS'] + '\n')
+        else:
+            of.writelines('@DEP@' + ','.join(env['PACKAGE_DEPENDS']) + '\n')
 
     if 'INSTALL_RUNTIME' in env:
-        print "Writing INSTALL_RUNTIME:"
-        print env['INSTALL_RUNTIME']
+        #print "Writing INSTALL_RUNTIME:"
+        #print env['INSTALL_RUNTIME']
         of.writelines(map(lambda x: '@RUN@' + x + '\n', env['INSTALL_RUNTIME']))
 
     if 'INSTALL_DEV' in env:
-        print "Writing INSTALL_DEV:"
-        print env['INSTALL_DEV']
+        #print "Writing INSTALL_DEV:"
+        #print env['INSTALL_DEV']
         of.writelines(map(lambda x: '@DEV@' + x + '\n', env['INSTALL_DEV']))
 
     if 'INSTALL_ANY' in env:
@@ -198,13 +230,27 @@ def Initialize(env):
         env['DEBUG_CPPDEFINES'] = ['_DEBUG']
         #env['CCPDBFLAGS'] = ['${(PDB and "/Zi /Fd%s" % File(PDB)) or ""}']
         env.Append(CFLAGS = '/MDd')
-        env['LIB_SUFFIX'] = '-msvcrt90d'
     else:
         print "Release environment"
         env['DEBUG_CFLAGS'] = '/Ox'
         env['DEBUG_CPPDEFINES'] = ['_NDEBUG']
         env.Append(CFLAGS = '/MD')
-        env['LIB_SUFFIX'] = '-msvcrt90'
+        if 'LIB_SUFFIX' in env['ENV']:
+            env['LIB_SUFFIX'] = env['ENV']['LIB_SUFFIX']
+        else:
+            env['LIB_SUFFIX'] = ""
+
+    if env['WITH_OSMSVCRT']:
+        env.Append(CPPDEFINES=[("WINVER", "0x0501"), ("_WIN32_WINNT", "0x0501"), ("__MSVCRT_VERSION__", "0x0601"), ("fstat(a, b)", "_fstat(a, b)")])
+        env.Append(CPPPATH=["#/../msvc"])
+        env.Append(LINKFLAGS='/NODEFAULTLIB:msvcrt.lib')
+        env.Append(LIBPATH=['#/../msvc/lib'])
+        env.Append(LIBS=['msvcrt.lib', 'msvcrt_compat.lib', 'oldnames.lib', 'msvcrt_upgrade.lib', 'kernel32.lib'])
+    if 'LIB_SUFFIX' in env['ENV']:
+        env['LIB_SUFFIX'] = env['ENV']['LIB_SUFFIX'] + 'd'
+    else:
+        env['LIB_SUFFIX'] = ""
+
 
 def GInitialize(env):
     Initialize(env)
