@@ -4,9 +4,9 @@
 #ifndef _MSVCRT_COMPAT_H_
 #define _MSVCRT_COMPAT_H_
 
-#ifdef _MSC_VER
-#define fstat(a,b) _fstat(a,b)
-#if defined(__MSVCRT_VERSION__) && __MSVCRT_VERSION__ < 0x0700
+#ifdef MSVCRT_COMPAT_STAT
+#include <sys/stat.h>
+
 #ifdef _fstat /* will be defined to _fstat64i32 */
 #undef _fstat
 #endif
@@ -14,6 +14,22 @@
 #ifdef _wstat /* _fstat64i32 */
 #undef _wstat
 #endif
+
+#ifdef _stat
+#undef _stat
+#endif
+
+#ifndef stat
+#define stat(x, y) _stat(x, y)
+#endif
+
+#ifndef fstat
+#define fstat(a,b) _fstat(a,b)
+#endif
+#endif /* MSVCRT_COMPAT_STAT */
+
+#ifdef MSVCRT_COMPAT_IO
+#include <io.h>
 
 #ifdef _wfindfirst
 #undef _wfindfirst
@@ -23,6 +39,21 @@
 #undef _wfindnext
 #endif
 
+#ifdef _findfirst
+#undef _findfirst
 #endif
-#endif /* _MSC_VER */
+
+#ifdef _findnext
+#undef _findnext
+#endif
+#endif /* MSVCRT_COMPAT_FIND */
+
+#ifdef MSVCRT_COMPAT_SPRINTF
+#include <stdio.h>
+#include <stdarg.h>
+#ifndef vsnprintf
+#define vsnprintf(buf, size, fmt, ap) _vsnprintf(buf, size, fmt, ap)
+#endif
+#endif /* MSVCRT_COMPAT_SPRINTF */
+
 #endif /* _MSVCRT_COMPAT_H_ */

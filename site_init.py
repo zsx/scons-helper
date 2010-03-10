@@ -233,21 +233,22 @@ def Initialize(env):
     else:
         print "Release environment"
         env['DEBUG_CFLAGS'] = '/Ox'
-        env['DEBUG_CPPDEFINES'] = ['_NDEBUG']
+        env['DEBUG_CPPDEFINES'] = ['NDEBUG']
         env.Append(CFLAGS = '/MD')
-        if 'LIB_SUFFIX' in env['ENV']:
-            env['LIB_SUFFIX'] = env['ENV']['LIB_SUFFIX']
-        else:
-            env['LIB_SUFFIX'] = ""
 
     if env['WITH_OSMSVCRT']:
-        env.Append(CPPDEFINES=[("WINVER", "0x0501"), ("_WIN32_WINNT", "0x0501"), ("__MSVCRT_VERSION__", "0x0601"), ("fstat(a, b)", "_fstat(a, b)")])
+        env.Append(CPPDEFINES=[("WINVER", "0x0501"),
+                               ("_WIN32_WINNT", "0x0501"), 
+                               ("__MSVCRT_VERSION__", "0x0601"),
+                               ("MSVCRT_COMPAT_ASSERT")])
         env.Append(CPPPATH=["#/../msvc"])
-        env.Append(LINKFLAGS='/NODEFAULTLIB:msvcrt.lib')
+        env.Append(CFLAGS=["/FImsvcrt_compat.h"])
+        env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrt.lib', '/NODEFAULTLIB:msvcrtd.lib'])
         env.Append(LIBPATH=['#/../msvc/lib'])
-        env.Append(LIBS=['msvcrt.lib', 'msvcrt_compat.lib', 'oldnames.lib', 'msvcrt_upgrade.lib', 'kernel32.lib'])
+        env.Append(LIBS=['msvcrt_compat.lib', 'msvcrt.lib', 'oldnames.lib', 'msvcrt_upgrade.lib', 'kernel32.lib'])
+
     if 'LIB_SUFFIX' in env['ENV']:
-        env['LIB_SUFFIX'] = env['ENV']['LIB_SUFFIX'] + 'd'
+        env['LIB_SUFFIX'] = env['ENV']['LIB_SUFFIX']
     else:
         env['LIB_SUFFIX'] = ""
 
