@@ -12,22 +12,28 @@ packs = ['zlib',
          'png',
          'jpeg-7',
          'freetype2',
-         'fontconfig',
-         'cairo',
          'glib',
          'libxml2',
+         'fontconfig',
+         'cairo',
          'atk', 
          'pango',
-         #'librsvg', waiting for pangoft2
          'gtk',
+         'librsvg', 
          'poppler',
-         'evince']
+         'evince'
+         ]
 
 def build():
+    action = "Install"
     log = file('build.log', 'w')
+    if len(sys.argv) > 1 and ('-c' in sys.argv[1:] or '--clean' in sys.argv[1:]):
+        packs.reverse()
+        action = "Uninstall"
     for p in packs:
-        args = [r'--site-dir=..', r'PREFIX=C:\FOSS\Debug', 'DEBUG=1', r'PERL=C:\Perl\bin\perl.exe', 'build_test=1'] + sys.argv[1:]
+        args = [r'--site-dir=..', r'PREFIX=C:\FOSS\Debug', 'DEBUG=1', r'PERL=C:\Perl\bin\perl.exe'] + sys.argv[1:]
         os.chdir(p)
+        '''
         print "Building ", p,
         ret = subprocess.Popen(['scons'] + args, shell=True, stdout = log).wait()
         if not ret:
@@ -36,10 +42,11 @@ def build():
             print ": Failure"
             log.close()
             return
+        '''
 
-        if p in ['pango', 'glib']:
+        if p in ['pango']:
             args += [r'--install-sandbox=C:\FOSS\debug']
-        print "Installing ", p,
+        print action + 'ing ', p,
         ret = subprocess.Popen(['scons'] + args + ['install'], shell=True, stdout = log).wait()
         if not ret:
             print ": Success"
