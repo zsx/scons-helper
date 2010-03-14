@@ -22,6 +22,8 @@
 #else
 
 #ifdef MSVCRT_COMPAT_ASSERT
+
+_CRTIMP void __cdecl _assert( void *msg, void *file, unsigned line );
 #define assert(_Expression) (void)( (!!(_Expression)) || (_assert(_CRT_WIDE(#_Expression), __FILE__, __LINE__), 0) )
 
 #else
