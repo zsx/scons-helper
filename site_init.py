@@ -236,7 +236,7 @@ def Initialize(env):
         env['DEBUG_CPPDEFINES'] = ['NDEBUG']
         env.Append(CFLAGS = '/MD')
 
-    if env['WITH_OSMSVCRT']:
+    if 'WITH_OSMSVCRT' in env and env['WITH_OSMSVCRT']:
         env.Append(CPPDEFINES=[("WINVER", "0x0501"),
                                ("_WIN32_WINNT", "0x0501"), 
                                ("__MSVCRT_VERSION__", "0x0601"),
