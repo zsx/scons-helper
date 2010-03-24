@@ -1,0 +1,28 @@
+<?xml version='1.0'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+   <Product Id='768a3a5d-64ef-4ba6-9c12-762b2f4b5174' UpgradeCode='c91be0da-6e84-4d47-9075-b82c074fa1b5' Name='Gnome4WinDev' Language='1033'
+             Version='0.0.0.1' Manufacturer='Gnome4Win Group'>
+      <Package Description='Gnome4Win Devlopment Installer package'
+               Comments='Gnome4Win Devlopment Installer package'
+               InstallerVersion='200' Compressed='yes' />
+ 
+      <Media Id='1' Cabinet='Gnome4winDev.cab' EmbedCab='yes' />
+ 
+      <Directory Id='TARGETDIR' Name='SourceDir'>
+         <Directory Id='ProgramFilesFolder' Name='PFiles'>
+             <Directory Id='INSTALLDIR' Name='Gnome4Win'>
+                 <Merge Id='ZlibDev' Language='1033' SourceFile='zlib/zlibdev.msm' DiskId='1' />
+             </Directory>
+         </Directory>
+      </Directory>
+
+      <Feature Id='Complete' Title='Libraries' Description='Complete package' Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
+          <Feature Id='Dev' Title='Devtime files' Description='Install Devtime files for end users' Level='1'>
+              <FeatureGroupRef Id='ZlibDevGroup' />
+          </Feature>
+      </Feature>
+
+	  <UIRef Id="WixUI_Mondo" />
+	  <UIRef Id="WixUI_ErrorProgressText" />
+   </Product>
+</Wix>

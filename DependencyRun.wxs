@@ -4,6 +4,7 @@
         <FeatureGroup Id='ZlibRunGroup'>
             <MergeRef Id='ZlibRun' />
         </FeatureGroup>
+        <!--
         <FeatureGroup Id='PngRunGroup'>
             <MergeRef Id='PngRun' />
         </FeatureGroup>
@@ -63,13 +64,6 @@
             <MergeRef Id='EvinceRun' />
             <FeatureGroupRef Id='LibPopplerRunGroup' />
         </FeatureGroup>
-        
-        <FeatureGroup Id='DevGroup'>
-            <MergeRef Id='ZlibDev' />
-            <FeatureGroupRef Id='RunGroup' />
-        </FeatureGroup>
-        <FeatureGroup Id='PixmanDevGroup'>
-            <MergeRef Id='PixmanDev' />
-        </FeatureGroup>
+        --> 
     </Fragment>
 </Wix>

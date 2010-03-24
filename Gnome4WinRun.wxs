@@ -1,29 +1,24 @@
 <?xml version='1.0'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-   <Product Id='df810e9b-eda4-40ed-95ee-87cfaea29672' UpgradeCode='de9fe3a1-4e13-45e7-a595-9fc4c5453635' Name='Gnome4Win Installer Package' Language='1033'
+   <Product Id='df810e9b-eda4-40ed-95ee-87cfaea29672' UpgradeCode='de9fe3a1-4e13-45e7-a595-9fc4c5453635' Name='Gnome4WinRun' Language='1033'
              Version='0.0.0.1' Manufacturer='Gnome4Win Group'>
-      <Package Description='Gnome4Win Installer package'
-               Comments='Gnome4Win Installer package'
+      <Package Description='Gnome4Win Runtime Installer package'
+               Comments='Gnome4Win Runtime Installer package'
                InstallerVersion='200' Compressed='yes' />
  
-      <Media Id='1' Cabinet='Gnome4win.cab' EmbedCab='yes' />
+      <Media Id='1' Cabinet='Gnome4winRun.cab' EmbedCab='yes' />
  
       <Directory Id='TARGETDIR' Name='SourceDir'>
          <Directory Id='ProgramFilesFolder' Name='PFiles'>
              <Directory Id='INSTALLDIR' Name='Gnome4Win'>
                  <Merge Id='ZlibRun' Language='1033' SourceFile='zlib/zlibrun.msm' DiskId='1' />
-                 <Merge Id='ZlibDev' Language='1033' SourceFile='zlib/zlibdev.msm' DiskId='1' />
              </Directory>
          </Directory>
       </Directory>
 
       <Feature Id='Complete' Title='Libraries' Description='Complete package' Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
           <Feature Id='Run' Title='Runtime files' Description='Install Runtime files for end users' Level='1'>
-              <FeatureGroupRef Id='RunGroup' />
-          </Feature>
-          <Feature Id='Dev' Title='Devlopment files' Description='Install devlopment files for devlopers' Level='1'> 
-              <FeatureGroupRef Id='DevGroup' />
-              <FeatureGroupRef Id='RunGroup' />
+              <FeatureGroupRef Id='ZlibRunGroup' />
           </Feature>
       </Feature>
 
