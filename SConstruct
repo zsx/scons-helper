@@ -5,9 +5,11 @@ opts = Variables()
 opts.Add(PathVariable('PREFIX', 'InstallDevation prefix', os.path.expanduser('~/FOSS'), PathVariable.PathIsDirCreate))
 env = Environment(variables = opts, ENV=os.environ, tools = ['default', GBuilder])
 env.Tool('wixtool', '#')
-all_libs = {'zlib': []}
+all_libs = {'zlib': [],
+            'pixman': []}
 dev_libs = all_libs.copy()
 run_libs = all_libs.copy()
+del run_libs['pixman']
 libs = {'Run': run_libs,
         'Dev': dev_libs}
 all_apps = {}
