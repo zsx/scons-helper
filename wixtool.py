@@ -16,6 +16,8 @@ import SCons.Util
 import SCons.Scanner
 
 def wix_scanner(node, env, path):
+    if not os.path.exists(str(node)):
+        raise Exception("'%s' doesn't exists" % str(node))
     ext = os.path.splitext(str(node))[1]
     known_wix_sourcefiles = ['.wxs', '.wxi']
     if ext not in known_wix_sourcefiles:
@@ -96,7 +98,7 @@ def generate(env):
         skeys = ['.wxs', '.wxi'],
         recursive = 1)
 
-    env['SCANNERS'] += [wxi_scanner]
+    #env['SCANNERS'] += [wxi_scanner]
 
     object_builder = SCons.Builder.Builder(
         action = '$WIXCANDLECOM',

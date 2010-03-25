@@ -1,11 +1,72 @@
 # vim: ft=python expandtab
-env = Environment()
+import os
+from site_init import GBuilder
+opts = Variables()
+opts.Add(PathVariable('PREFIX', 'InstallDevation prefix', os.path.expanduser('~/FOSS'), PathVariable.PathIsDirCreate))
+env = Environment(variables = opts, ENV=os.environ, tools = ['default', GBuilder])
 env.Tool('wixtool', '#')
-run_modules=['zlib/zlibrun.msm']
-dev_modules = [x.replace('run.msm', 'dev.msm') for x in run_modules]
-env.Append(WIXLIGHTFLAGS = ['-ext', 'WixUIExtension'])
+all_libs = {'zlib': []}
+dev_libs = all_libs.copy()
+run_libs = all_libs.copy()
+libs = {'Run': run_libs,
+        'Dev': dev_libs}
+all_apps = {}
+dev_apps = all_apps.copy()
+run_apps = all_apps.copy()
+apps = {'Run': run_apps,
+        'Dev': dev_apps}
 
-env.WiX('Gnome4WinRun.msi', ['Gnome4WinRun.wxs', 'DependencyRun.wxs'])
-env.WiX('Gnome4WinDev.msi', ['Gnome4WinDev.wxs', 'DependencyDev.wxs'])
-env.Depends('Gnome4WinRun.msi', run_modules)
-env.Depends('Gnome4WinDev.msi', run_modules)
+dev_modules = dict(dev_libs.items() + dev_apps.items())
+run_modules = dict(run_libs.items() + run_apps.items())
+
+modules = {'Run': run_modules,
+           'Dev': dev_modules}
+for f in ['Run', 'Dev']:
+    for m in modules[f]:
+        s = env['PREFIX'] + r'\\wxs\\%s%s.wxs' % (m, f)
+        env.WiX('%s%s.msm'% (m, f), s)
+
+def generate_featuregroup_dependency(modules, flavor):
+    ret = ''
+    for k in modules.keys():
+        ret += '''<FeatureGroup Id='%s%sGroup'>
+            <MergeRef Id='%s%s' />
+        </FeatureGroup>\n''' % (k.title(), flavor, k.title(), flavor)
+        if modules[k]:
+            for d in modules[k]:
+                ret += '''<FeatureGroupRef Id='%s%sGroup' />\n'''% (d, flavor)
+    return ret
+def generate_merge(modules, flavor):
+    ret = ''
+    for m in modules.keys():
+        ret += "<Merge Id='%s%s' Language='1033' SourceFile='%s%s.msm' DiskId='1' />\n" % (m.title(), f, m, f.lower())
+    return ret
+
+def generate_feature_ref(modules, flavor):
+    ret = ''
+    for m in modules.keys():
+        ret += """<Feature Id='%s' Title='%s' Description='Install %s and its dependencies' Display='expand' Level='1'>
+        <FeatureGroupRef Id='%s%sGroup' />
+        </Feature>\n""" % (m.title(), m.title(), m, m.title(), flavor)
+    return ret
+
+for f in ['Run', 'Dev']:
+    env_dep = env.Clone()
+    env_dep['DOT_IN_SUBS'] = {'@FLAVOR@': f,
+                              '@FEATURE_GROUPS@': generate_featuregroup_dependency(modules[f], f)}
+    env_dep.DotIn('Dependency%s.wxs' % f, 'Dependency.wxs.in')
+    env_dep.Depends('Dependency%s.wxs' % f, 'SConstruct')
+
+    e = env.Clone()
+                        
+    e['DOT_IN_SUBS'] = {'@VERSION@': '0.0.0.2',
+                        '@MERGE_MODULES@': generate_merge(modules[f], f),
+                        '@FEATURE_LIBS@': generate_feature_ref(libs[f], f),
+                        '@FEATURE_APPS@' : generate_feature_ref(apps[f], f)}
+    e.DotIn('Gnome4Win%s.wxs' % f, 'Gnome4Win%s.wxs.in' % f)
+    e.Depends('Gnome4Win%s.wxs' % f, 'SConstruct')
+    e.Append(WIXLIGHTFLAGS = ['-ext', 'WixUIExtension'])
+    sources = ['Gnome4Win%s.wxs' % f, 'Dependency%s.wxs' % f]
+    e.WiX('Gnome4Win%s.msi' % f, sources)
+    e.Depends('Gnome4Win%s.msi' % f, [x+ f.lower() + '.msm' for x in modules[f].keys()])
+

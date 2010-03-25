@@ -1,69 +1,9 @@
 <?xml version='1.0'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-    <Fragment Id='Dependency'>
+    <Fragment Id='DependencyRun'>
         <FeatureGroup Id='ZlibRunGroup'>
             <MergeRef Id='ZlibRun' />
         </FeatureGroup>
-        <!--
-        <FeatureGroup Id='PngRunGroup'>
-            <MergeRef Id='PngRun' />
-        </FeatureGroup>
-        <FeatureGroup Id='JpegRunGroup'>
-            <MergeRef Id='JpegRun' />
-        </FeatureGroup>
-        <FeatureGroup Id='Freetype2RunGroup'>
-            <MergeRef Id='Freetype2Run' />
-            <FeatureGroupRef Id='ZlibRunGroup' />
-        </FeatureGroup>
-        <FeatureGroup Id='GlibRunGroup'>
-            <MergeRef Id='GlibRun' />
-            <FeatureGroupRef Id='ZlibRunGroup' />
-        </FeatureGroup>
-        <FeatureGroup Id='LibXml2RunGroup'>
-            <MergeRef Id='LibXml2Run' />
-            <FeatureGroupRef Id='GlibRunGroup' />
-        </FeatureGroup>
-        <FeatureGroup Id='FontConfigRunGroup'>
-            <MergeRef Id='FontConfigRun' />
-            <FeatureGroupRef Id='GlibRunGroup' />
-            <FeatureGroupRef Id='LibXml2RunGroup' />
-            <FeatureGroupRef Id='Freetype2RunGroup' />
-        </FeatureGroup>
-        <FeatureGroup Id='CairoRunGroup'>
-            <MergeRef Id='CairoRun' />
-            <FeatureGroupRef Id='PngRunGroup' />
-            <FeatureGroupRef Id='FontConfigRunGroup' />
-            <FeatureGroupRef Id='Freetype2RunGroup' />
-        </FeatureGroup>
-        <FeatureGroup Id='AtkRunGroup'>
-            <MergeRef Id='AtkRun' />
-            <FeatureGroupRef Id='GlibRunGroup' />
-        </FeatureGroup>
 
-        <FeatureGroup Id='PangoRunGroup'>
-            <MergeRef Id='PangoRun' />
-            <FeatureGroupRef Id='GlibRunGroup' />
-            <FeatureGroupRef Id='CairoRunGroup' />
-            <FeatureGroupRef Id='Freetype2RunGroup' />
-        </FeatureGroup>
-        <FeatureGroup Id='GtkRunGroup'>
-            <MergeRef Id='GtkRun' />
-            <FeatureGroupRef Id='AtkRunGroup' />
-            <FeatureGroupRef Id='PangoRunGroup' />
-        </FeatureGroup>
-        <FeatureGroup Id='LibRSVGRunGroup'>
-            <MergeRef Id='LibRSVGRun' />
-            <FeatureGroupRef Id='GlibRunGroup' />
-        </FeatureGroup>
-        <FeatureGroup Id='LibPopplerRunGroup'>
-            <MergeRef Id='LibPopplerRun' />
-            <FeatureGroupRef Id='GtkRunGroup' />
-        </FeatureGroup>
-
-        <FeatureGroup Id='EvinceRunGroup'>
-            <MergeRef Id='EvinceRun' />
-            <FeatureGroupRef Id='LibPopplerRunGroup' />
-        </FeatureGroup>
-        --> 
     </Fragment>
 </Wix>

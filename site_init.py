@@ -222,6 +222,15 @@ def DumpInstalledFiles(env):
         of.writelines(map(lambda x: '@ANY@' + x + '\n', env['INSTALL_ANY']))
     of.close()
 
+def generate_file_element(names, d, env):
+    if isinstance(names, str):
+        names = [names]
+    ret = ''
+    for name in names:
+        ret += "<File Id='%s' Name='%s' Source='%s\\%s\\%s' />\n" % (name.replace('-', '_'), name, env['PREFIX'], d, name)
+
+    return ret
+
 def Initialize(env):
     env.AppendENVPath('PKG_CONFIG_PATH', env['PREFIX'] + '/lib/pkgconfig')
     if env['DEBUG']:
