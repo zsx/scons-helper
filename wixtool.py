@@ -84,7 +84,7 @@ def wix_scanner(node, env, path):
 def generate(env):
     """Add Builders and construction variables for WiX to an Environment."""
     env['WIXCANDLE'] = 'candle.exe'
-    env['WIXCANDLEFLAGS'] += ['-nologo']
+    env['WIXCANDLEFLAGS'] = ['-nologo']
     env['WIXCANDLEINCLUDE'] = []
     env['WIXCANDLECOM'] = '$WIXCANDLE $WIXCANDLEFLAGS -I $WIXCANDLEINCLUDE -o ${TARGET} ${SOURCE}'
 
