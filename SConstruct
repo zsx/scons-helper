@@ -6,7 +6,14 @@ opts.Add(PathVariable('PREFIX', 'InstallDevation prefix', os.path.expanduser('~/
 env = Environment(variables = opts, ENV=os.environ, tools = ['default', GBuilder])
 env.Tool('wixtool', '#')
 all_libs = {'zlib': [],
-            'pixman': []}
+            'pixman': [],
+            'intl':[],
+            'winiconv':[],
+            'glib': ['zlib', 'winiconv', 'intl'],
+            'gmodule': ['glib'],
+            'gthread': ['glib'],
+            'gobject': ['glib', 'gthread'],
+            'gio':['glib', 'gobject', 'gmodule']}
 dev_libs = all_libs.copy()
 run_libs = all_libs.copy()
 del run_libs['pixman']
@@ -32,11 +39,11 @@ def generate_featuregroup_dependency(modules, flavor):
     ret = ''
     for k in modules.keys():
         ret += '''<FeatureGroup Id='%s%sGroup'>
-            <MergeRef Id='%s%s' />
-        </FeatureGroup>\n''' % (k.title(), flavor, k.title(), flavor)
+            <MergeRef Id='%s%s' />\n'''% (k.title(), flavor, k.title(), flavor)
         if modules[k]:
             for d in modules[k]:
-                ret += '''<FeatureGroupRef Id='%s%sGroup' />\n'''% (d, flavor)
+                ret += '''<FeatureGroupRef Id='%s%sGroup' />\n'''% (d.title(), flavor)
+        ret += '</FeatureGroup>\n'
     return ret
 def generate_merge(modules, flavor):
     ret = ''
