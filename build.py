@@ -9,19 +9,20 @@ top_dir = os.path.abspath(os.path.dirname(__file__))
 
 packs = ['zlib',
          'pixman',
-         'png',
-         'jpeg-7',
-         'freetype2',
-         'glib',
+         #'png',
+         #'jpeg-7',
+         #'freetype2',
          'libxml2',
-         'fontconfig',
-         'cairo',
-         'atk', 
-         'pango',
-         'gtk',
-         'librsvg', 
-         'poppler',
-         'evince'
+         'dbus',
+         'glib',
+         #'fontconfig',
+         #'cairo',
+         #'atk', 
+         #'pango',
+         #'gtk',
+         #'librsvg', 
+         #'poppler',
+         #'evince'
          ]
 
 def build():
