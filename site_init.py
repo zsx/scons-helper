@@ -131,7 +131,7 @@ def GBuilder(env):
             for x in s.readlines():
                 mo = fun_regex.search(x)
                 if mo:
-                    if 'BLACKLIST' not in env or mo.group(1) not in env['BLACKLIST']:
+                    if 'DEF_BLACKLIST' not in env or mo.group(1) not in env['DEF_BLACKLIST']:
                         syms.add(mo.group(1) + '\n')
             s.close()
         syms_list = list(syms)

@@ -9,12 +9,14 @@ all_libs = {'zlib': [],
             'pixman': [],
             'intl':[],
             'winiconv':[],
+            'png': ['zlib'],
             'libxml2':['zlib'],
             'dbus': ['libxml2'],
             'glib': ['zlib', 'winiconv', 'intl'],
             'gmodule': ['glib'],
             'gthread': ['glib'],
             'gobject': ['glib', 'gthread'],
+            'dbus-glib': ['dbus', 'gobject'],
             'gio':['glib', 'gobject', 'gmodule']}
 dev_libs = all_libs.copy()
 run_libs = all_libs.copy()
@@ -41,24 +43,26 @@ def generate_featuregroup_dependency(modules, flavor):
     ret = ''
     for k in modules.keys():
         ret += '''<FeatureGroup Id='%s%sGroup'>
-            <MergeRef Id='%s%s' />\n'''% (k.title(), flavor, k.title(), flavor)
+            <MergeRef Id='%s%s' />\n'''% (k.replace('-', '_').title(), flavor, k.replace('-', '_').title(), flavor)
         if modules[k]:
             for d in modules[k]:
-                ret += '''<FeatureGroupRef Id='%s%sGroup' />\n'''% (d.title(), flavor)
+                ret += '''<FeatureGroupRef Id='%s%sGroup' />\n'''% (d.replace('-', '_').title(), flavor)
         ret += '</FeatureGroup>\n'
     return ret
 def generate_merge(modules, flavor):
     ret = ''
     for m in modules.keys():
-        ret += "<Merge Id='%s%s' Language='1033' SourceFile='%s%s.msm' DiskId='1' />\n" % (m.title(), f, m, f.lower())
+        ret += "<Merge Id='%s%s' Language='1033' SourceFile='%s%s.msm' DiskId='1' />\n" % (m.replace('-', '_').title(), f, m, f.lower())
     return ret
 
 def generate_feature_ref(modules, flavor):
     ret = ''
-    for m in modules.keys():
+    k = [m for m in modules.keys()]
+    k.sort()
+    for m in k:
         ret += """<Feature Id='%s' Title='%s' Description='Install %s and its dependencies' Display='expand' Level='1'>
         <FeatureGroupRef Id='%s%sGroup' />
-        </Feature>\n""" % (m.title(), m.title(), m, m.title(), flavor)
+        </Feature>\n""" % (m.replace('-', '_').title(), m.title(), m, m.replace('-', '_').title(), flavor)
     return ret
 
 for f in ['Run', 'Dev']:
