@@ -15,8 +15,8 @@ all_libs = {'zlib': [],
             'freetype2':['zlib'],
             'fontconfig':['libxml2', 'freetype2', 'winiconv'],
             'cairo': ['zlib', 'fontconfig', 'freetype2', 'png', 'pixman'],
-            'dbus': ['libxml2'],
-            'glib': ['zlib', 'winiconv', 'intl'],
+            'dbus': [],
+            'glib': ['winiconv', 'intl'],
             'gmodule': ['glib'],
             'gthread': ['glib'],
             'gobject': ['glib', 'gthread'],
@@ -27,6 +27,8 @@ dev_libs = all_libs.copy()
 run_libs = all_libs.copy()
 del run_libs['pixman']
 del run_libs['cairo'][-1] #delete pixman dependency, since it's statically linked
+del run_libs['freetype2'][0] #delete zlib dependency, which is not needed for running
+del run_libs['libxml2'][0] #delete zlib dependency, which is not needed for running
 
 libs = {'Run': run_libs,
         'Dev': dev_libs}
