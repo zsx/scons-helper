@@ -21,7 +21,8 @@ all_libs = {'zlib': [],
             'gthread': ['glib'],
             'gobject': ['glib', 'gthread'],
             'dbus-glib': ['dbus', 'gobject'],
-            'gio':['glib', 'gobject', 'gmodule']}
+            'gio':['glib', 'gobject', 'gmodule'],
+            'atk':['gobject', 'glib']}
 dev_libs = all_libs.copy()
 run_libs = all_libs.copy()
 del run_libs['pixman']
