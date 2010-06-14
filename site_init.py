@@ -227,7 +227,7 @@ def generate_file_element(names, d, env):
         names = [names]
     ret = ''
     for name in names:
-        ret += "<File Id='%s' Name='%s' Source='%s\\%s\\%s' />\n" % (name.replace('-', '_'), name, env['PREFIX'], d, name)
+        ret += "<File Id='%s' Name='%s' Source='%s\\%s\\%s' />\n" % (re.sub(r'^\d|[^\w\d_]', '_', name), name, env['PREFIX'], d, name)
 
     return ret
 
