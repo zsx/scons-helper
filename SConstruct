@@ -29,7 +29,8 @@ all_libs = {'zlib': [],
             'pangoft2':['pango', 'freetype2', 'fontconfig'],
             'gdk': ['gdkpixbuf', 'pangowin32', 'pangocairo'],
             'gdkpixbuf':['gobject'],
-            'gtk':['gdk', 'atk', 'cairo', 'gio']}
+            'gtk':['gdk', 'atk', 'cairo', 'gio'],
+            'poppler':['glib']}
 dev_libs = all_libs.copy()
 run_libs = all_libs.copy()
 del run_libs['pixman']
