@@ -6,6 +6,8 @@ from filecmp import cmp
 from tempfile import mkstemp
 from shutil import copyfile
 from SCons.Script import *
+from xml.etree.ElementTree import SubElement, tostring
+from xml.dom import minidom
 
 def GBuilder(env):
     def dot_in_fun(target, source, env):
@@ -140,6 +142,22 @@ def GBuilder(env):
         t.close()
     
     env.Append(BUILDERS={'DefGeneratorByRegex': env.Builder(action = gen_def_from_headers_by_exporting_regex, src_suffix = '.h')})
+
+# for WXS generation
+def Idfy(s):
+    return re.sub('[^\d\w\._]', '_', s)
+
+def FileElement(parent, names, d, env):
+    if isinstance(names, str):
+        names = [names]
+    for i in names:
+        SubElement(parent, 'File', Id=Idfy(i), Name=i, Source='%s/%s/%s' %(env['PREFIX'], d, i))
+
+def generate_wxs(target, source, env):
+    # Whatever it takes to build
+    xml = minidom.parseString(tostring(env['XML']))
+    op = open(str(target[0]), 'w')
+    xml.writexml(op, indent='', addindent="\t", newl='\n', encoding='iso8859-1')
 
 def __Install(target, source, env, d):
     dest = re.sub(r'\$(\w+)', lambda x: env[x.group(1)], target)
